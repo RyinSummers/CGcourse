@@ -1,0 +1,20 @@
+#version 330 core
+
+//输入顶点位置
+layout(location = 0) in vec3 vertexPosition_modelspace;
+//从C++输入UV坐标
+layout(location = 1) in vec2 vertexUV;
+
+//输出UV坐标给片段着色器
+out vec2 fragmentUV;
+
+//矩阵
+uniform mat4 MVP;
+
+void main(){
+
+	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+	
+	fragmentUV = vertexUV;
+}
+

@@ -1,0 +1,20 @@
+#version 330 core
+
+//输入，来自顶点着色器的颜色
+in vec4 fragmentColor;
+
+//in vec2 fragmentUV;
+
+//输出
+out vec4 color;
+
+// 纹理样式
+//uniform sampler2D myTextureSampler;
+
+void main(){
+
+	
+	color = fragmentColor;
+	//color.rgb = texture( myTextureSampler, fragmentUV ).rgb;
+
+}
