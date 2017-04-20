@@ -1,30 +1,118 @@
 #version 330 core
 
 //第一层缓冲，编号为0，从C++输入数据，顶点位置
-layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 0) in vec3 vertexPosition;
 
 //第二层缓冲，编号为1，从C++输入数据，顶点颜色
 layout(location = 1) in vec3 vertexColor;
 
-//layout(location = 2) in vec2 vertexUV;
+//第三层缓冲，编号为2，从C++输入数据，纹理坐标
+layout(location = 2) in vec2 vertexUV;
+
+//法向量
+layout(location = 3) in vec3 vertexNormal;
 
 //输出数据， 给片段着色器
-out vec4 fragmentColor;
+out vec3 fragmentColor;
 
-//out vec2 fragmentUV;
+out vec2 fragmentUV;
 
-//静态数据，MVP矩阵
+out vec3 fragmentPos;
+
+out vec3 fragmentNormal;
+
+//静态数据，MVP
 uniform mat4 MVP;
+uniform mat4 M;
 
 void main(){	
 
 	//顶点位置，参数
-	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+	gl_Position =  MVP * vec4(vertexPosition,1);
 
 	//片段颜色，传递给片段着色器
-	fragmentColor.xyz = vertexColor;
-	fragmentColor.a=0.9;
+	fragmentColor = vertexColor;
 	
-	//fragmentUV= vertexUV;
+	//纹理坐标，传递给片段着色器
+	fragmentUV= vertexUV;
+	
+	//世界坐标的顶点位置
+	fragmentPos= vec3( M * vec4(vertexPosition, 1.0f));
+	
+	//法向量
+	fragmentNormal = vertexNormal;
 }
 
+
+
+/*
+//第一层缓冲，编号为0，从C++输入数据，顶点位置
+layout(location = 0) in vec3 vertexPosition;
+
+//第二层缓冲，编号为1，从C++输入数据，顶点颜色
+layout(location = 1) in vec3 vertexColor;
+
+//第三层缓冲，编号为2，从C++输入数据，纹理坐标
+layout(location = 2) in vec2 vertexUV;
+
+//法向量
+layout(location = 3) in vec3 vertexNormal;
+
+//输出数据， 给片段着色器
+out vec3 fragmentColor;
+
+out vec2 fragmentUV;
+
+out vec4 fragmentlightcolor;
+
+//光源的色彩
+uniform vec4 lightColor;
+
+//环境光照强度
+uniform float ambientStrength;
+
+//光源位置
+uniform vec3 lightPos;
+
+//相机位置
+uniform vec3 viewPos;
+
+//静态数据，MVP
+uniform mat4 MVP;
+uniform mat4 M;
+
+void main(){	
+
+	//顶点位置，参数
+	gl_Position =  MVP * vec4(vertexPosition,1);
+
+	//片段颜色，传递给片段着色器
+	fragmentColor = vertexColor;
+	
+	//纹理坐标，传递给片段着色器
+	fragmentUV= vertexUV;
+	
+	//世界坐标的顶点位置
+	vec3 fragmentPos= vec3( M * vec4(vertexPosition, 1.0f));
+	
+	//法向量
+	vec3 fragmentNormal = mat3(transpose(inverse(M))) * vertexNormal;
+	
+	//环境光
+	vec4 ambient=ambientStrength * lightColor;
+	
+	//光源入射方向
+	vec3 lightDir = normalize(lightPos - fragmentPos);
+	//漫反射
+	vec4 diffuse= max(dot(normalize(fragmentNormal), lightDir), 0.0) * lightColor;
+	
+	//反射强度参数
+	float specularStrength = 0.5f;
+	//发光值参数
+	int n=32;
+	//镜面反射计算公式
+	float spec = pow(max(dot(normalize(viewPos - fragmentPos), reflect(-lightDir, normalize(fragmentNormal))), 0.0), n);
+	vec4 specular = specularStrength * spec * lightColor;
+	fragmentlightcolor = (ambient + diffuse + specular);
+}
+*/

@@ -13,6 +13,7 @@ const int WIDTH=800;
 const int HEIGHT=600;
 const GLchar* vertexShaderFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/ColorArrays.vertexshader";
 const GLchar* fragmentShaderFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/ColorArrays.fragmentshader";
+const GLchar* textureFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/egg.tga";
 
 void error_callback(int error, const char* description)
 {
@@ -57,16 +58,11 @@ int main(int argc, char ** argv)
 	}
 	glViewport(0, 0, WIDTH, HEIGHT);
 	glClearColor(1.0, 1.0, 1.0, 1.0);//指定默认背景的颜色为白色
+	//glClearColor(0.0, 0.0, 0.0, 1.0);//黑色背景
 	glEnable(GL_DEPTH_TEST);//自动进行深度缓冲
 	glDepthFunc(GL_LESS);
 	glEnable(GL_MULTISAMPLE);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
-	//创建VAO，顶点数组对象
-	GLuint VAO;
-	glGenVertexArrays(1, &VAO);
-	//绑定至上下文
-	glBindVertexArray(VAO);
 	
 	//着色器加载
 	GLuint programID = loadShaders(vertexShaderFile, fragmentShaderFile);
@@ -78,10 +74,16 @@ int main(int argc, char ** argv)
 	 * ===================================================================================
 	 */
 	
-	//VBO顶点缓冲对象，管理顶点数组的内存
-	GLuint VBO;
-	//EBO索引缓冲对象，管理索引数组的内存
-	GLuint EBO;
+	//创建VAO，顶点数组对象
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	
+	/*
+	 * ==================
+	 * 0顶点缓冲数据
+	 * ==================
+	 */
 	static const GLfloat vertices[] = {
 		-1.0f, -1.0f, -1.0f,
 		-1.0f, -1.0f, 1.0f,
@@ -106,85 +108,121 @@ int main(int argc, char ** argv)
             0, 2, 4,
             2, 4, 6,
     };
+	//VBO顶点缓冲对象，管理顶点数组的内存
+	GLuint VBO;
 	//产生1个
 	glGenBuffers(1, &VBO);
 	//绑定到array_buffer上
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//把数组数据设置到buffer里
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+	//EBO索引缓冲对象，管理索引数组的内存
+	GLuint EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
 	
-	//颜色缓冲
-	GLuint colorbuffer;
-	glGenBuffers(1, &colorbuffer);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//layout,size,type,normalized?,stride,array buffer offset
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+	glEnableVertexAttribArray(0);
+	
+	/*
+	 * ==================
+	 * 1颜色缓冲数据
+	 * ==================
+	 */
 	//立方体顶点颜色数据
 	static GLfloat colors[8*3];
 	//srand(time(NULL));
 	for (int v = 0; v < 8 ; v++)
 	{
-		colors[3*v+0] = (float)rand()/RAND_MAX;
-		colors[3*v+1] = (float)rand()/RAND_MAX;
-		colors[3*v+2] = (float)rand()/RAND_MAX;
+//		colors[3*v+0] = (float)rand()/RAND_MAX;
+//		colors[3*v+1] = (float)rand()/RAND_MAX;
+//		colors[3*v+2] = (float)rand()/RAND_MAX;
+		colors[3*v+0] = 1.0f;
+		colors[3*v+1] = 0.5f;
+		colors[3*v+2] = 0.31f;
 	}
+	GLuint colorbuffer;
+	glGenBuffers(1, &colorbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
-	glEnableVertexAttribArray(0);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,0,(void*)0);
 	glEnableVertexAttribArray(1);
 	
 	/*
-	// 3nd attribute buffer : UVs
-	glEnableVertexAttribArray(2);
+	 * ==================
+	 * 2纹理缓冲数据
+	 * ==================
+	 */
+	GLuint textureID=loadtga(textureFile);
+	//坐标在0-1之间
+	static GLfloat uv[]={
+		1.0f, 0.0f,
+		0.0f, 1.0f,
+		0.0f, 1.0f,
+		0.0f, 0.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+	};
+	GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,0,(void*)0);
-	*/
+	glBufferData(GL_ARRAY_BUFFER, sizeof(uv), uv, GL_DYNAMIC_DRAW);
 	
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
-	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,0,(void*)0);
+	glEnableVertexAttribArray(2);
 	
 	
 	/*
-	//纹理导入
-	//GLuint Texture = loadBMP_custom("/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/uvtemplate.bmp");
-	GLuint Texture = loadDDS("/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/uvtemplate.DDS");
-	GLuint textureID = glGetUniformLocation(programID, "myTextureSampler");
-	
-	GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	// Two UV coordinatesfor each vertex. They were created withe Blender.
-	static const GLfloat uv[] = { 
-		0.0f,0.0f,
-		1.0f,1.0f,
-		0.0f,0.0f,
-		1.0f,1.0f,
-		0.0f,0.0f,
-		1.0f,1.0f,
-		0.0f,0.0f,
-		1.0f,1.0f,
-	};
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(uv), uv, GL_STATIC_DRAW);
+	 * ==================
+	 * 3面的法线数据
+	 * ==================
 	 */
-
-	//模型矩阵，观察矩阵，投影矩阵，MVP，translate计算矩阵并传给GLSL，scale缩放变换，rotate旋转
+	static GLfloat normals[]={
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f, 1.0f,
+		-1.0f, 1.0f, -1.0f,
+		-1.0f, 1.0f, 1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, 1.0f,
+		1.0f, 1.0f, -1.0f,
+		1.0f, 1.0f, 1.0f,
+	};
+	GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+	glEnableVertexAttribArray(3);
+	
+	
+	/*
+	 * ==================
+	 * MVP
+	 * ==================
+	 */
 	//从着色器获得uniform变量MVP的索引
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+	GLuint ModelID = glGetUniformLocation(programID, "M");
 	//45°水平视野, 4:3, 展示范围远近截面
 	mat4 projection=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
 	// Or, for an ortho camera :正交投影
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 	//相机位置，相机朝向的点的位置，相机头的方向向量
-	mat4 view=lookAt(vec3(4,2,0),vec3(0,0,3),vec3(0,1,0));
+	vec3 cameraview=vec3(4,2,0);
+	//vec3 cameraview=vec3(2,5,5);
+	mat4 view=lookAt(cameraview,vec3(0,0,3),vec3(0,1,0));
+	
 	mat4 model_head=mat4(1.0f);
 	mat4 model_body=mat4(1.0f);
 	mat4 model_hand_left=mat4(1.0f);
@@ -209,15 +247,27 @@ int main(int argc, char ** argv)
 		//glShadeModel(GL_FLAT);//设置颜色是单色还是默认渐变过度填充
 		
 		glUseProgram(programID);//使用着色器
+		
 		glBindVertexArray(VAO);
 		
-		/*
+		//纹理
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture);
-		glUniform1i(textureID, 0);
-		*/
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glUniform1i(glGetUniformLocation(programID, "myTextureSampler"), 0);
+		
+		//Phong Lighting Model：环境(Ambient)、漫反射(Diffuse)和镜面(Specular)光照
+		//光线颜色，设置为白色
+		glUniform4f(glGetUniformLocation(programID, "lightColor"), 1.0f, 1.0f, 1.0f, 1.0f);
+		//环境光照强度
+		glUniform1f(glGetUniformLocation(programID, "ambientStrength"), 0.3f);
+		//光源位置，为世界坐标，即只经过model变换
+		glUniform3f(glGetUniformLocation(programID, "lightPos"), 5.0f, 5.0f, 5.0f);
+		//相机位置，为世界坐标
+		glUniform3f(glGetUniformLocation(programID, "viewPos"), cameraview.x, cameraview.y, cameraview.z);
+		
 		//地板
 		MVP=projection*view*model_stay;
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_stay[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
@@ -229,6 +279,7 @@ int main(int argc, char ** argv)
 		//model_body=rotate(model_body,(float)cos(glfwGetTime()/2)*2.355f,vec3(0.0f,1.0f,0.0f));
 		//model_body=scale(model_body, vec3(0.2f,0.5f,0.2f));
 		MVP=projection*view*model_body;
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_body[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
@@ -241,6 +292,7 @@ int main(int argc, char ** argv)
 		model_head=scale(model_head, vec3(0.1f,0.1f,0.1f));
 		MVP=projection*view*model_head;
 		//通过索引，往着色器设置Uniform变量的值，类型为float向量
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_head[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);//MVP
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
@@ -255,6 +307,7 @@ int main(int argc, char ** argv)
 		model_hand_left=translate(model_hand_left,vec3(0.0f,-0.5f,0.0f));
 		model_hand_left=scale(model_hand_left, vec3(0.1f,0.5f,0.1f));
 		MVP=projection*view*model_hand_left;
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_hand_left[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
@@ -267,6 +320,7 @@ int main(int argc, char ** argv)
 		model_hand_right=translate(model_hand_right,vec3(0.0f,-0.5f,0.0f));
 		model_hand_right=scale(model_hand_right, vec3(0.1f,0.5f,0.1f));
 		MVP=projection*view*model_hand_right;
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_hand_right[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
@@ -279,6 +333,7 @@ int main(int argc, char ** argv)
 		model_leg_left=translate(model_leg_left,vec3(0.0f,-0.5f,0.0f));
 		model_leg_left=scale(model_leg_left, vec3(0.1f,0.5f,0.1f));
 		MVP=projection*view*model_leg_left;
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_leg_left[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
@@ -291,20 +346,20 @@ int main(int argc, char ** argv)
 		model_leg_right=translate(model_leg_right,vec3(0.0f,-0.5f,0.0f));
 		model_leg_right=scale(model_leg_right, vec3(0.1f,0.5f,0.1f));
 		MVP=projection*view*model_leg_right;
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &model_leg_right[0][0]);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glDrawElements(GL_TRIANGLES, 12*3, GL_UNSIGNED_INT, (void*)0);
 		
 		glfwSwapBuffers(window);//交换颜色缓冲
 		glfwPollEvents();//检查有没有触发什么事件（比如键盘输入、鼠标移动等）
 	}
-
-	// Cleanup
+	
 	glDeleteBuffers(1, &colorbuffer);
-	//glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &uvbuffer);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 	glDeleteProgram(programID);
-	//glDeleteTextures(1, &textureID);
+	glDeleteTextures(1, &textureID);
 	glDeleteVertexArrays(1, &VAO);
 	//窗口结束
     glfwTerminate();

@@ -16,8 +16,6 @@
     <File Name="objLoader.h"/>
     <File Name="ColorArrays.fragmentshader"/>
     <File Name="ColorArrays.vertexshader"/>
-    <File Name="Texture.fragmentshader"/>
-    <File Name="Texture.vertexshader"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
