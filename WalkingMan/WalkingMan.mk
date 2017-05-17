@@ -3,17 +3,17 @@
 ## any manual changes will be erased      
 ##
 ## Debug
-ProjectName            :=CGcourse
+ProjectName            :=WalkingMan
 ConfigurationName      :=Debug
 WorkspacePath          :=/Users/LJY/Documents/CodeLiteWorkspace
-ProjectPath            :=/Users/LJY/Documents/CodeLiteWorkspace/CGcourse
+ProjectPath            :=/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/WalkingMan
 IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=LJY
-Date                   :=20/04/2017
+Date                   :=14/05/2017
 CodeLitePath           :="/Users/LJY/Library/Application Support/codelite"
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -dynamiclib -fPIC
@@ -32,15 +32,15 @@ Preprocessors          :=
 ObjectSwitch           :=-o 
 ArchiveOutputSwitch    := 
 PreprocessOnlySwitch   :=-E
-ObjectsFileList        :="CGcourse.txt"
+ObjectsFileList        :="WalkingMan.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
 LinkOptions            :=  -framework OpenGL 
 IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)/usr/local/include/ 
 IncludePCH             := 
 RcIncludePath          := 
-Libs                   := $(LibrarySwitch)glfw $(LibrarySwitch)GLEW 
-ArLibs                 :=  "glfw" "GLEW" 
+Libs                   := $(LibrarySwitch)glfw $(LibrarySwitch)glew 
+ArLibs                 :=  "glfw" "glew" 
 LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch)/usr/local/lib/ 
 
 ##
@@ -92,7 +92,7 @@ PreBuild:
 ## Objects
 ##
 $(IntermediateDirectory)/main.cpp$(ObjectSuffix): main.cpp $(IntermediateDirectory)/main.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/WalkingMan/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/main.cpp$(DependSuffix): main.cpp
 	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/main.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/main.cpp$(DependSuffix) -MM main.cpp
 

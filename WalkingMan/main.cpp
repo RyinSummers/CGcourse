@@ -1,5 +1,5 @@
-#include "shader.h"
-#include "texture.h"
+#include "../tool/shader.h"
+#include "../tool/texture.h"
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h> 
@@ -11,9 +11,9 @@ using namespace glm;
 
 const int WIDTH=800;
 const int HEIGHT=600;
-const GLchar* vertexShaderFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/ColorArrays.vertexshader";
-const GLchar* fragmentShaderFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/ColorArrays.fragmentshader";
-const GLchar* textureFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/egg.tga";
+const GLchar* vertexShaderFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/WalkingMan/ColorArrays.vertexshader";
+const GLchar* fragmentShaderFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/WalkingMan/ColorArrays.fragmentshader";
+const GLchar* textureFile = "/Users/LJY/Documents/CodeLiteWorkspace/CGcourse/resource/egg.tga";
 
 void error_callback(int error, const char* description)
 {
@@ -257,11 +257,14 @@ int main(int argc, char ** argv)
 		
 		//Phong Lighting Model：环境(Ambient)、漫反射(Diffuse)和镜面(Specular)光照
 		//光线颜色，设置为白色
-		glUniform4f(glGetUniformLocation(programID, "lightColor"), 1.0f, 1.0f, 1.0f, 1.0f);
-		//环境光照强度
-		glUniform1f(glGetUniformLocation(programID, "ambientStrength"), 0.3f);
+		glUniform3f(glGetUniformLocation(programID, "light.lightColor"), 1.0f, 1.0f, 1.0f);
 		//光源位置，为世界坐标，即只经过model变换
-		glUniform3f(glGetUniformLocation(programID, "lightPos"), 5.0f, 5.0f, 5.0f);
+		glUniform3f(glGetUniformLocation(programID, "light.lightPos"), 5.0f, 5.0f, 5.0f);
+		//材质参数
+		glUniform1f(glGetUniformLocation(programID, "material.ambientStrength"), 0.3f);
+		glUniform1f(glGetUniformLocation(programID, "material.diffuse"), 1.0f);
+		glUniform1f(glGetUniformLocation(programID, "material.specularStrength"), 0.2f);
+		glUniform1f(glGetUniformLocation(programID, "material.shininess"), 128);
 		//相机位置，为世界坐标
 		glUniform3f(glGetUniformLocation(programID, "viewPos"), cameraview.x, cameraview.y, cameraview.z);
 		
