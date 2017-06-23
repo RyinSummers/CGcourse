@@ -1,0 +1,1 @@
+./Debug/main.cpp.o ./Debug/Ray.cpp.o ./Debug/IntersectResult.cpp.o ./Debug/Camera.cpp.o ./Debug/Scene.cpp.o

@@ -219,10 +219,10 @@ int main(int argc, char ** argv)
 	// Or, for an ortho camera :正交投影
 	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
 	//相机位置，相机朝向的点的位置，相机头的方向向量
-	vec3 cameraview=vec3(4,2,0);
-	//vec3 cameraview=vec3(2,5,5);
-	mat4 view=lookAt(cameraview,vec3(0,0,3),vec3(0,1,0));
-	
+	//vec3 cameraview=vec3(4,2,0);
+	vec3 cameraview=vec3(10,0,0);
+	//mat4 view=lookAt(cameraview,vec3(0,0,3),vec3(0,1,0));
+	mat4 view=lookAt(cameraview,vec3(0,0,0),vec3(0,1,0));
 	mat4 model_head=mat4(1.0f);
 	mat4 model_body=mat4(1.0f);
 	mat4 model_hand_left=mat4(1.0f);
